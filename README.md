@@ -54,29 +54,112 @@ A lightweight, RESTful API service built with Go (Golang) to manage movie theate
 
 ---
 
-## 🧪 Testing with cURL
+# 🚀 Postman Testing Guide
 
-You can test the API directly from your terminal using these commands:
+This guide details how to test the Movie Booking API endpoints using **Postman**.
 
-**1. Create a Booking**
-```bash
-curl -X POST http://localhost:8080/bookings \
-  -H "Content-Type: application/json" \
-  -d '{"id": "101", "movie": "Dune 2", "movie_number": "MOV-009", "seat": "K5", "user": "Paul"}'
-curl http://localhost:8080/bookings
-curl -X PATCH http://localhost:8080/bookings/101 \
-  -H "Content-Type: application/json" \
-  -d '{"seat": "K6"}'
-curl -X DELETE http://localhost:8080/bookings/101
-{
-  "id": "1",
-  "movie": "Inception",
-  "movie_number": "MOV-001",
-  "seat": "A1",
-  "user": "Alice",
-  "is_active": true,       // System Controlled
-  "created_at": "2023..."  // System Controlled
-}
+**Base URL:** `http://localhost:8080`
+
+---
+
+## 1. Create a Booking (POST)
+Creates a new active booking.
+
+* **Method:** `POST`
+* **URL:** `http://localhost:8080/bookings`
+* **Headers:**
+    * `Content-Type`: `application/json`
+* **Body (raw JSON):**
+    ```json
+    {
+        "id": "101",
+        "movie": "Dune 2",
+        "movie_number": "MOV-009",
+        "seat": "K5",
+        "user": "Paul"
+    }
+    ```
+* **Expected Status:** `201 Created`
+
+---
+
+## 2. Get All Active Bookings (GET)
+Retrieves the list of all valid bookings.
+
+* **Method:** `GET`
+* **URL:** `http://localhost:8080/bookings`
+* **Body:** None
+* **Expected Status:** `200 OK`
+
+---
+
+## 3. Update Seat Details (PATCH)
+Updates specific fields (e.g., seat) without changing the rest of the booking.
+
+* **Method:** `PATCH`
+* **URL:** `http://localhost:8080/bookings/101`
+* **Headers:**
+    * `Content-Type`: `application/json`
+* **Body (raw JSON):**
+    ```json
+    {
+        "seat": "K6"
+    }
+    ```
+* **Expected Status:** `200 OK`
+
+---
+
+## 4. Full Update (PUT)
+Replaces the entire booking. **Warning:** Missing fields will be set to empty strings.
+
+* **Method:** `PUT`
+* **URL:** `http://localhost:8080/bookings/101`
+* **Headers:**
+    * `Content-Type`: `application/json`
+* **Body (raw JSON):**
+    ```json
+    {
+        "id": "101",
+        "movie": "Dune 2",
+        "movie_number": "MOV-009",
+        "seat": "VIP-1",
+        "user": "Paul Atreides"
+    }
+    ```
+* **Expected Status:** `200 OK`
+
+---
+
+## 5. Cancel Booking (DELETE)
+Performs a "Soft Delete" (marks `is_active` as false).
+
+* **Method:** `DELETE`
+* **URL:** `http://localhost:8080/bookings/101`
+* **Body:** None
+* **Expected Status:** `204 No Content`
+
+---
+
+## 🧪 Testing API Limitations
+
+### Test 1: Data Persistence (Memory Reset)
+Since this API uses In-Memory storage, follow these steps to verify that data is lost on restart:
+
+1.  Run the **Create Booking** request (Step 1 above).
+2.  Run **Get All Active Bookings** to confirm ID `101` exists.
+3.  **Stop the Go Server** (Ctrl+C in terminal).
+4.  **Start the Go Server** again (`go run main.go`).
+5.  Run **Get All Active Bookings** in Postman.
+6.  **Result:** ID `101` will be gone (only hardcoded seed data remains).
+
+### Test 2: Invalid ID Handling
+Verify how the API handles non-existent IDs.
+
+1.  **Method:** `GET`
+2.  **URL:** `http://localhost:8080/bookings/99999`
+3.  **Expected Status:** `404 Not Found`
+   
 ⚠️ Current Limitations 
 Persistence: Currently uses an In-Memory store. Data resets when the server stops. Future updates will integrate PostgreSQL.
 
