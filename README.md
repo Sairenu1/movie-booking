@@ -28,7 +28,7 @@ A lightweight, RESTful API service built with Go (Golang) to manage movie theate
 ### Installation & Run
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/yourusername/movie-booking-api.git](https://github.com/yourusername/movie-booking-api.git)
+    git clone [https://github.com/Sairenu1/movie-booking-api.git](https://github.com/Sairenu1/movie-booking-api.git)
     cd movie-booking-api
     ```
 
